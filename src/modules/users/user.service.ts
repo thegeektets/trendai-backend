@@ -26,21 +26,6 @@ export class UserService {
     return user.save();
   }
 
-  async linkBrandToUser(userId: string, brandId: string): Promise<User> {
-    return this.userModel.findByIdAndUpdate(userId, { brandId }, { new: true });
-  }
-
-  async linkInfluencerToUser(
-    userId: string,
-    influencerId: string,
-  ): Promise<User> {
-    return this.userModel.findByIdAndUpdate(
-      userId,
-      { influencerId },
-      { new: true },
-    );
-  }
-
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
   }

@@ -16,36 +16,36 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('brands')
-@UseGuards(JwtAuthGuard, RolesGuard) // Apply authentication & role-based access
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 
   @Post()
-  @Roles('brand') // Only brands can create brands
+  @Roles('brand')
   create(@Body() createBrandDto: CreateBrandDto) {
     return this.brandService.create(createBrandDto);
   }
 
   @Get()
-  @Roles('user', 'influencer', 'brand') // Anyone can list brands
+  @Roles('influencer', 'brand')
   findAll() {
     return this.brandService.findAll();
   }
 
   @Get(':id')
-  @Roles('brand') // Only brands can fetch specific brand details
+  @Roles('brand')
   findOne(@Param('id') id: string) {
     return this.brandService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles('brand') // Only brands can update their details
+  @Roles('brand')
   update(@Param('id') id: string, @Body() updateBrandDto: UpdateBrandDto) {
     return this.brandService.update(id, updateBrandDto);
   }
 
   @Delete(':id')
-  @Roles('brand') // Only brands can delete their data
+  @Roles('brand')
   remove(@Param('id') id: string) {
     return this.brandService.remove(id);
   }

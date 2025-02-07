@@ -11,9 +11,14 @@ export class CampaignService {
     @InjectModel(Campaign.name) private campaignModel: Model<CampaignDocument>,
   ) {}
 
-  async createCampaign(dto: CreateCampaignDto): Promise<Campaign> {
-    const newCampaign = new this.campaignModel(dto);
-    return newCampaign.save();
+  async createCampaign(campaign: CreateCampaignDto): Promise<Campaign> {
+    const newCampaign = new this.campaignModel(campaign);
+    const savedCampaign = await newCampaign.save();
+
+    return {
+      ...savedCampaign.toObject(),
+      _id: savedCampaign._id.toString(),
+    };
   }
 
   async getCampaigns(): Promise<Campaign[]> {
@@ -25,7 +30,10 @@ export class CampaignService {
     if (!campaign) {
       throw new NotFoundException(`Campaign with ID ${id} not found`);
     }
-    return campaign;
+    return {
+      ...campaign.toObject(),
+      _id: campaign._id.toString(),
+    };
   }
 
   async updateCampaign(id: string, dto: UpdateCampaignDto): Promise<Campaign> {
@@ -39,10 +47,13 @@ export class CampaignService {
     if (!updatedCampaign) {
       throw new NotFoundException(`Campaign with ID ${id} not found`);
     }
-    return updatedCampaign;
+
+    return {
+      ...updatedCampaign.toObject(),
+      _id: updatedCampaign._id.toString(),
+    };
   }
 
-  /** 📌 Delete a campaign */
   async deleteCampaign(id: string): Promise<{ message: string }> {
     const deleted = await this.campaignModel.findByIdAndDelete(id).exec();
     if (!deleted) {

@@ -21,12 +21,20 @@ export class SubmissionService {
     if (!submission) {
       throw new NotFoundException(`Submission with ID ${id} not found`);
     }
-    return submission;
+    return {
+      ...submission.toObject(),
+      _id: submission._id.toString(),
+    };
   }
 
   async createSubmission(data: CreateSubmissionDto): Promise<Submission> {
     const newSubmission = new this.submissionModel(data);
-    return newSubmission.save();
+    const savedSubmission = await newSubmission.save();
+
+    return {
+      ...savedSubmission.toObject(),
+      _id: savedSubmission._id.toString(),
+    };
   }
 
   async updateSubmission(
@@ -43,24 +51,10 @@ export class SubmissionService {
     if (!updatedSubmission) {
       throw new NotFoundException(`Submission with ID ${id} not found`);
     }
-    return updatedSubmission;
-  }
-
-  async partialUpdateSubmission(
-    id: string,
-    data: UpdateSubmissionDto,
-  ): Promise<Submission> {
-    const updatedSubmission = await this.submissionModel
-      .findByIdAndUpdate(id, data, {
-        new: true,
-        runValidators: true,
-      })
-      .exec();
-
-    if (!updatedSubmission) {
-      throw new NotFoundException(`Submission with ID ${id} not found`);
-    }
-    return updatedSubmission;
+    return {
+      ...updatedSubmission.toObject(),
+      _id: updatedSubmission._id.toString(),
+    };
   }
 
   async deleteSubmission(id: string): Promise<{ message: string }> {

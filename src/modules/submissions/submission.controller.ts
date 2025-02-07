@@ -27,6 +27,11 @@ export class SubmissionController {
   @Get()
   @UseGuards(RolesGuard)
   @Roles('brand', 'influencer')
+  /**
+   * Retrieves all submissions.
+   *
+   * @returns All submissions.
+   */
   async getAllSubmissions() {
     return await this.submissionService.getSubmissions();
   }
@@ -34,6 +39,12 @@ export class SubmissionController {
   @Get(':id')
   @UseGuards(RolesGuard)
   @Roles('brand', 'influencer')
+  /**
+   * Retrieves a submission by ID.
+   *
+   * @param id - The ID of the submission to be retrieved.
+   * @returns The retrieved submission object.
+   */
   async getSubmission(@Param('id') id: string) {
     return await this.submissionService.getSubmissionById(id);
   }
@@ -41,6 +52,12 @@ export class SubmissionController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles('influencer')
+  /**
+   * Handles the creation of a new submission.
+   *
+   * @param data - The data for creating a new submission, encapsulated in a CreateSubmissionDto.
+   * @returns The created submission object.
+   */
   async createSubmission(@Body() data: CreateSubmissionDto) {
     return await this.submissionService.createSubmission(data);
   }
@@ -48,6 +65,13 @@ export class SubmissionController {
   @Put(':id')
   @UseGuards(RolesGuard)
   @Roles('influencer')
+  /**
+   * Handles the update of a submission.
+   *
+   * @param id - The id of the submission to be updated.
+   * @param data - The data for updating the submission, encapsulated in an UpdateSubmissionDto.
+   * @returns The updated submission object.
+   */
   async updateSubmission(
     @Param('id') id: string,
     @Body() data: UpdateSubmissionDto,
@@ -58,16 +82,29 @@ export class SubmissionController {
   @Patch(':id')
   @UseGuards(RolesGuard)
   @Roles('influencer')
+  /**
+   * Handles the partial update of a submission.
+   *
+   * @param id - The id of the submission to be updated.
+   * @param data - The data for updating the submission, encapsulated in an UpdateSubmissionDto. Only the provided fields will be updated.
+   * @returns The updated submission object.
+   */
   async partiallyUpdateSubmission(
     @Param('id') id: string,
     @Body() data: UpdateSubmissionDto,
   ) {
-    return await this.submissionService.partialUpdateSubmission(id, data);
+    return await this.submissionService.updateSubmission(id, data);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('brand')
+  @Roles('influencer')
+  /**
+   * Handles the deletion of a submission.
+   *
+   * @param id - The id of the submission to be deleted.
+   * @returns A message indicating that the submission was deleted successfully.
+   */
   async deleteSubmission(@Param('id') id: string) {
     return await this.submissionService.deleteSubmission(id);
   }

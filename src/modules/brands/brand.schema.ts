@@ -18,7 +18,8 @@ export class Brand {
   description?: string;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })
-  users: Types.ObjectId[]; // Array of user IDs
+  users: Types.ObjectId[];
+
   _id: any;
 }
 

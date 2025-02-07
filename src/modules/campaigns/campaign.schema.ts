@@ -22,6 +22,8 @@ export class Campaign {
 
   @Prop({ enum: ['active', 'paused', 'completed'], default: 'active' })
   status: string;
+
+  _id?: string;
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);

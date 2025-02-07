@@ -12,8 +12,14 @@ export class InfluencerService {
     private influencerModel: Model<InfluencerDocument>,
   ) {}
 
-  async create(createInfluencerDto: CreateInfluencerDto): Promise<Influencer> {
-    return await new this.influencerModel(createInfluencerDto).save();
+  async create(data: CreateInfluencerDto): Promise<Influencer> {
+    const newInfluencer = new this.influencerModel(data);
+    const savedInfluencer = await newInfluencer.save();
+
+    return {
+      ...savedInfluencer.toObject(),
+      _id: savedInfluencer._id.toString(),
+    };
   }
 
   async findAll(): Promise<Influencer[]> {
@@ -23,7 +29,7 @@ export class InfluencerService {
   async findOne(id: string): Promise<Influencer> {
     const influencer = await this.influencerModel.findById(id).exec();
     if (!influencer) throw new NotFoundException('Influencer not found');
-    return influencer;
+    return { ...influencer.toObject(), _id: influencer._id.toString() };
   }
 
   async update(
@@ -34,7 +40,10 @@ export class InfluencerService {
       .findByIdAndUpdate(id, updateInfluencerDto, { new: true })
       .exec();
     if (!updatedInfluencer) throw new NotFoundException('Influencer not found');
-    return updatedInfluencer;
+    return {
+      ...updatedInfluencer.toObject(),
+      _id: updatedInfluencer._id.toString(),
+    };
   }
 
   async remove(id: string): Promise<void> {

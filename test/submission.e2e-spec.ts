@@ -11,9 +11,11 @@ import {
 import { User, UserSchema } from '../src/modules/users/user.schema';
 import { getModelToken } from '@nestjs/mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SubmissionService } from '../src/modules/submissions/submission.service';
 import mongoose from 'mongoose';
 import { getConnectionToken } from '@nestjs/mongoose';
+import { SubmissionsModule } from '../src/modules/submissions/submission.module';
+import { JwtService } from '@nestjs/jwt';
+import { SubmissionService } from '../src/modules/submissions/submission.service';
 
 describe('SubmissionController (e2e)', () => {
   let app: INestApplication;
@@ -26,10 +28,13 @@ describe('SubmissionController (e2e)', () => {
   let brandUser: User;
   let authHeadersInfluencer: { Authorization: string };
   let authHeadersBrand: { Authorization: string };
+  let jwtService: JwtService;
+  let brandToken: string;
+  let influencerToken: string;
 
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
+    const uri = await mongoServer.getUri();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -38,8 +43,9 @@ describe('SubmissionController (e2e)', () => {
           { name: Submission.name, schema: SubmissionSchema },
           { name: User.name, schema: UserSchema },
         ]),
+        SubmissionsModule,
       ],
-      providers: [SubmissionService],
+      providers: [SubmissionService, JwtService],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -50,6 +56,7 @@ describe('SubmissionController (e2e)', () => {
       getModelToken(Submission.name),
     );
     userModel = moduleFixture.get<Model<User>>(getModelToken(User.name));
+    jwtService = moduleFixture.get<JwtService>(JwtService);
 
     // Create test users
     influencerUser = await userModel.create({
@@ -66,15 +73,28 @@ describe('SubmissionController (e2e)', () => {
       role: 'brand',
     });
 
+    // Generate JWT tokens
+    brandToken = jwtService.sign({ id: brandUser._id, role: 'brand' });
+    influencerToken = jwtService.sign({
+      id: influencerUser._id,
+      role: 'influencer',
+    });
+
     // Mock authentication headers
-    authHeadersInfluencer = { Authorization: `Bearer mock-token-influencer` };
-    authHeadersBrand = { Authorization: `Bearer mock-token-brand` };
+    authHeadersInfluencer = { Authorization: `Bearer ${influencerToken}` };
+    authHeadersBrand = { Authorization: `Bearer ${brandToken}` };
   });
 
   afterAll(async () => {
-    await connection.close();
-    await mongoServer.stop();
-    await app.close();
+    if (connection) {
+      await connection.close();
+    }
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+    if (app) {
+      await app.close();
+    }
   });
 
   it('POST /submissions - should allow an influencer to create a submission', async () => {
@@ -115,7 +135,6 @@ describe('SubmissionController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .get('/submissions')
       .set(authHeadersInfluencer);
-
     expect(response.status).toBe(200);
     expect(response.body.length).toBeGreaterThan(0);
   });
@@ -147,7 +166,7 @@ describe('SubmissionController (e2e)', () => {
     expect(response.body._id).toBe(createdSubmissionId);
   });
 
-  it('PATCH /submissions/:id - should allow an influencer to update their submission', async () => {
+  it('PUT /submissions/:id - should allow an influencer to update their submission', async () => {
     const response = await request(app.getHttpServer())
       .patch(`/submissions/${createdSubmissionId}`)
       .set(authHeadersInfluencer)
@@ -158,7 +177,7 @@ describe('SubmissionController (e2e)', () => {
     expect(response.body.engagement.comments).toBe(40);
   });
 
-  it('PATCH /submissions/:id - should prevent a brand from updating a submission', async () => {
+  it('PUT /submissions/:id - should prevent a brand from updating a submission', async () => {
     const response = await request(app.getHttpServer())
       .patch(`/submissions/${createdSubmissionId}`)
       .set(authHeadersBrand)
@@ -171,7 +190,6 @@ describe('SubmissionController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .delete(`/submissions/${createdSubmissionId}`)
       .set(authHeadersInfluencer);
-
     expect(response.status).toBe(200);
 
     // Verify deletion

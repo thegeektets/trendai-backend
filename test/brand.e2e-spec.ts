@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BrandService } from '../src/modules/brands/brand.service';
 import { JwtService } from '@nestjs/jwt';
 import { getConnectionToken } from '@nestjs/mongoose';
+import { BrandsModule } from '../src/modules/brands/brand.module';
 
 describe('BrandController (e2e) - Role-Based Access', () => {
   let app: INestApplication;
@@ -35,6 +36,7 @@ describe('BrandController (e2e) - Role-Based Access', () => {
           { name: Brand.name, schema: BrandSchema },
           { name: User.name, schema: UserSchema },
         ]),
+        BrandsModule,
       ],
       providers: [BrandService, JwtService],
     }).compile();
@@ -63,14 +65,11 @@ describe('BrandController (e2e) - Role-Based Access', () => {
     });
 
     // Generate JWT tokens
-    brandToken = jwtService.sign(
-      { id: brandUser._id, role: 'brand' },
-      { secret: 'test_secret' },
-    );
-    influencerToken = jwtService.sign(
-      { id: influencerUser._id, role: 'influencer' },
-      { secret: 'test_secret' },
-    );
+    brandToken = jwtService.sign({ id: brandUser._id, role: 'brand' });
+    influencerToken = jwtService.sign({
+      id: influencerUser._id,
+      role: 'influencer',
+    });
 
     // Create a brand for update/delete tests
     testBrand = await brandModel.create({
@@ -82,9 +81,15 @@ describe('BrandController (e2e) - Role-Based Access', () => {
   });
 
   afterAll(async () => {
-    await connection.close();
-    await mongoServer.stop();
-    await app.close();
+    if (connection) {
+      await connection.close();
+    }
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+    if (app) {
+      await app.close();
+    }
   });
 
   it('POST /brands should allow a brand user to create a brand', async () => {

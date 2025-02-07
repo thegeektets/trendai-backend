@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Patch,
   Param,
@@ -26,38 +27,48 @@ export class InfluencerController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles('brand', 'influencer')
-  create(@Body() createInfluencerDto: CreateInfluencerDto) {
-    return this.influencerService.create(createInfluencerDto);
+  async create(@Body() data: CreateInfluencerDto) {
+    return await this.influencerService.create(data);
   }
 
   @Get()
   @UseGuards(RolesGuard)
   @Roles('brand')
-  findAll() {
-    return this.influencerService.findAll();
+  async findAll() {
+    return await this.influencerService.findAll();
   }
 
   @Get(':id')
   @UseGuards(RolesGuard)
   @Roles('brand', 'influencer')
-  findOne(@Param('id') id: string) {
-    return this.influencerService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.influencerService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(RolesGuard)
   @Roles('influencer')
-  update(
+  async partialUpdate(
     @Param('id') id: string,
     @Body() updateInfluencerDto: UpdateInfluencerDto,
   ) {
-    return this.influencerService.update(id, updateInfluencerDto);
+    return await this.influencerService.update(id, updateInfluencerDto);
+  }
+
+  @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles('influencer')
+  async update(
+    @Param('id') id: string,
+    @Body() updateInfluencerDto: UpdateInfluencerDto,
+  ) {
+    return await this.influencerService.update(id, updateInfluencerDto);
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard)
   @Roles('influencer')
-  remove(@Param('id') id: string) {
-    return this.influencerService.remove(id);
+  async remove(@Param('id') id: string) {
+    return await this.influencerService.remove(id);
   }
 }

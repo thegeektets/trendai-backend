@@ -20,14 +20,10 @@ describe('User Management (e2e)', () => {
   let mongoServer: MongoMemoryServer;
   let connection: Connection;
   let userModel: Model<User>;
-  let brandModel: Model<Brand>;
-  let influencerModel: Model<Influencer>;
 
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = await mongoServer.getUri();
-
-    console.log('MongoDB URI:', uri);
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -46,10 +42,6 @@ describe('User Management (e2e)', () => {
 
     connection = moduleFixture.get(getConnectionToken());
     userModel = moduleFixture.get<Model<User>>(getModelToken(User.name));
-    brandModel = moduleFixture.get<Model<Brand>>(getModelToken(Brand.name));
-    influencerModel = moduleFixture.get<Model<Influencer>>(
-      getModelToken(Influencer.name),
-    );
   });
 
   afterAll(async () => {
@@ -81,40 +73,34 @@ describe('User Management (e2e)', () => {
       expect(response.body.influencerId).toBeUndefined();
     });
 
-    it('should register a user linked to a brand', async () => {
-      const brand = await brandModel.create({ name: 'Nike' });
-
+    it('should register a brand user', async () => {
       const response = await request(app.getHttpServer())
         .post('/users/register')
         .send({
           email: 'branduser@example.com',
           password: 'password123',
           role: UserRole.BRAND,
-          brandId: brand._id.toString(),
         });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('_id');
       expect(response.body.email).toBe('branduser@example.com');
-      expect(response.body.brandId).toBe(brand._id.toString());
+      expect(response.body.role).toBe('brand');
     });
 
-    it('should register a user linked to an influencer', async () => {
-      const influencer = await influencerModel.create({ name: 'John Doe' });
-
+    it('should register a influencer user', async () => {
       const response = await request(app.getHttpServer())
         .post('/users/register')
         .send({
-          email: 'influencer@example.com',
+          email: 'influenceruser@example.com',
           password: 'password123',
           role: UserRole.INFLUENCER,
-          influencerId: influencer._id.toString(),
         });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('_id');
-      expect(response.body.email).toBe('influencer@example.com');
-      expect(response.body.influencerId).toBe(influencer._id.toString());
+      expect(response.body.email).toBe('influenceruser@example.com');
+      expect(response.body.role).toBe('influencer');
     });
 
     it('should reject duplicate email registration', async () => {

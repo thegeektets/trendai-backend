@@ -15,6 +15,7 @@ import {
 import { CampaignService } from '../src/modules/campaigns/campaign.service';
 import { User, UserSchema } from '../src/modules/users/user.schema';
 import { getConnectionToken } from '@nestjs/mongoose';
+import { CampaignsModule } from '../src/modules/campaigns/campaign.module';
 
 describe('CampaignController (e2e) - Role-Based Access', () => {
   let app: INestApplication;
@@ -46,6 +47,7 @@ describe('CampaignController (e2e) - Role-Based Access', () => {
           { name: Campaign.name, schema: CampaignSchema },
           { name: User.name, schema: UserSchema },
         ]),
+        CampaignsModule,
       ],
       providers: [CampaignService, JwtService],
     }).compile();
@@ -74,14 +76,11 @@ describe('CampaignController (e2e) - Role-Based Access', () => {
     });
 
     // Generate JWT tokens
-    brandToken = jwtService.sign(
-      { id: brandUser._id, role: 'brand' },
-      { secret: 'test_secret' },
-    );
-    influencerToken = jwtService.sign(
-      { id: influencerUser._id, role: 'influencer' },
-      { secret: 'test_secret' },
-    );
+    brandToken = jwtService.sign({ id: brandUser._id, role: 'brand' });
+    influencerToken = jwtService.sign({
+      id: influencerUser._id,
+      role: 'influencer',
+    });
   });
 
   afterAll(async () => {

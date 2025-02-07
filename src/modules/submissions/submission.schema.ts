@@ -27,6 +27,8 @@ export class Submission {
 
   @Prop({ required: true, type: Date, default: Date.now })
   submittedAt: Date;
+
+  _id?: string;
 }
 
 export const SubmissionSchema = SchemaFactory.createForClass(Submission);

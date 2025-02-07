@@ -9,9 +9,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Ensure ConfigModule is loaded globally
+    ConfigModule.forRoot(),
     UsersModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

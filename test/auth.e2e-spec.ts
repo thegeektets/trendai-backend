@@ -23,12 +23,12 @@ describe('AuthController (e2e)', () => {
       imports: [
         MongooseModule.forRoot(uri),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        AuthModule, // Import Auth Module
+        AuthModule,
       ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe()); // Enable validation
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
 
     connection = moduleFixture.get(getConnectionToken());
@@ -53,8 +53,7 @@ describe('AuthController (e2e)', () => {
   });
 
   it('POST /auth/login should authenticate the user', async () => {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    await userModel.create({ ...userData, password: hashedPassword });
+    await userModel.create({ ...userData, password: userData.password });
 
     const response = await request(app.getHttpServer())
       .post('/auth/login')
@@ -62,6 +61,7 @@ describe('AuthController (e2e)', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('accessToken');
+    expect(response.body).toHaveProperty('user');
   });
 
   it('POST /auth/login should fail with incorrect password', async () => {
