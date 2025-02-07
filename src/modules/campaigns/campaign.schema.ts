@@ -1,15 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema()
-export class Campaign extends Document {
+export type CampaignDocument = Campaign & Document;
+
+@Schema({ timestamps: true })
+export class Campaign {
   @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })
-  deadline: Date;
+  description: string;
 
-  @Prop({ default: 'ongoing' })
+  @Prop({ required: true })
+  budget: number;
+
+  @Prop({ required: true, type: Date })
+  startDate: Date;
+
+  @Prop({ required: true, type: Date })
+  endDate: Date;
+
+  @Prop({ enum: ['active', 'paused', 'completed'], default: 'active' })
   status: string;
 }
 

@@ -12,5 +12,6 @@ import { Campaign, CampaignSchema } from './campaign.schema';
   ],
   controllers: [CampaignController],
   providers: [CampaignService],
+  exports: [MongooseModule, CampaignService],
 })
 export class CampaignsModule {}

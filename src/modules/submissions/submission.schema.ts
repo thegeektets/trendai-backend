@@ -1,19 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-@Schema()
-export class Submission extends Document {
+export type SubmissionDocument = Submission & Document;
+
+class Engagement {
+  @Prop({ type: Number, required: true, default: 0 })
+  likes: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  comments: number;
+}
+
+@Schema({ timestamps: true })
+export class Submission {
+  @Prop({ required: true, type: Types.ObjectId, ref: 'Campaign' })
+  campaignId: Types.ObjectId;
+
   @Prop({ required: true })
-  influencerId: string;
+  influencer: string;
 
   @Prop({ required: true })
-  campaignId: string;
+  contentLink: string;
 
-  @Prop({ required: true })
-  submissionUrl: string;
+  @Prop({ type: Engagement, default: () => ({ likes: 0, comments: 0 }) })
+  engagement: Engagement;
 
-  @Prop({ default: 'pending' }) // pending, approved, rejected
-  status: string;
+  @Prop({ required: true, type: Date, default: Date.now })
+  submittedAt: Date;
 }
 
 export const SubmissionSchema = SchemaFactory.createForClass(Submission);
