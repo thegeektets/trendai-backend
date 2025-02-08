@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { InfluencerService } from './influencer.service';
 import { InfluencerController } from './influencer.controller';
@@ -10,7 +10,7 @@ import { AuthModule } from '../auth/auth.module';
     MongooseModule.forFeature([
       { name: Influencer.name, schema: InfluencerSchema },
     ]),
-    AuthModule,
+    forwardRef(() => AuthModule),
   ],
   controllers: [InfluencerController],
   providers: [InfluencerService],

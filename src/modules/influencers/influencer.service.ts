@@ -50,4 +50,10 @@ export class InfluencerService {
     const deleted = await this.influencerModel.findByIdAndDelete(id).exec();
     if (!deleted) throw new NotFoundException('Influencer not found');
   }
+
+  async findByUserId(userId: string): Promise<Influencer | null> {
+    const influencer = await this.influencerModel.findOne({ userId }).exec();
+    if (!influencer) throw new NotFoundException('Influencer not found');
+    return influencer;
+  }
 }

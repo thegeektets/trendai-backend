@@ -41,4 +41,9 @@ export class BrandService {
 
     return { message: 'Brand deleted successfully' };
   }
+  async findByUserId(userId: string): Promise<Brand | null> {
+    const brand = await this.brandModel.findOne({ users: userId }).exec();
+    if (!brand) throw new NotFoundException('Brand not found for this user');
+    return brand;
+  }
 }
