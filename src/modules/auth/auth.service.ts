@@ -39,10 +39,12 @@ export class AuthService {
 
     // Fetch additional data based on role
     if (user.role === 'brand') {
-      profileData = await this.brandModel.findOne({ users: user._id }).exec();
+      profileData = await this.brandModel
+        .findOne({ users: { $in: [user._id.toString()] } })
+        .exec();
     } else if (user.role === 'influencer') {
       profileData = await this.influencerModel
-        .findOne({ user: user._id })
+        .findOne({ user: user._id.toString() })
         .exec();
     }
 
@@ -53,7 +55,7 @@ export class AuthService {
         id: user._id,
         email: user.email,
         role: user.role,
-        profile: profileData, // Include the brand/influencer details
+        profile: profileData,
       },
     };
   }
