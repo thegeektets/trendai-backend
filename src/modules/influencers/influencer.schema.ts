@@ -21,5 +21,11 @@ export class Influencer {
   user: Types.ObjectId;
   _id: any;
 }
-
 export const InfluencerSchema = SchemaFactory.createForClass(Influencer);
+
+// Virtual field for campaigns associated with the influencer
+InfluencerSchema.virtual('campaigns', {
+  ref: 'Submission',
+  localField: '_id',
+  foreignField: 'influencer',
+});

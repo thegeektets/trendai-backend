@@ -4,6 +4,8 @@ import { CampaignController } from './campaign.controller';
 import { CampaignService } from './campaign.service';
 import { Campaign, CampaignSchema } from './campaign.schema';
 import { AuthModule } from '../auth/auth.module';
+import { SubmissionsModule } from '../submissions/submission.module';
+import { InfluencerModule } from '../influencers/influencer.module';
 
 @Module({
   imports: [
@@ -11,6 +13,8 @@ import { AuthModule } from '../auth/auth.module';
       { name: Campaign.name, schema: CampaignSchema },
     ]),
     AuthModule,
+    SubmissionsModule,
+    InfluencerModule,
   ],
   controllers: [CampaignController],
   providers: [CampaignService],

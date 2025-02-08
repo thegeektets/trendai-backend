@@ -29,6 +29,11 @@ export class CampaignController {
     return await this.campaignService.getCampaigns();
   }
 
+  @Get('brand/:brandId')
+  async getCampaignsByBrand(@Param('brandId') brandId: string) {
+    return await this.campaignService.getCampaignsByBrand(brandId);
+  }
+
   @Get(':id')
   async getCampaign(@Param('id') id: string) {
     return await this.campaignService.getCampaignById(id);

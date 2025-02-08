@@ -28,6 +28,16 @@ export class Submission {
   @Prop({ required: true, type: Date, default: Date.now })
   submittedAt: Date;
 
+  @Prop({
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  })
+  status: string; // Status of the submission (pending, approved, rejected)
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
+  approver: Types.ObjectId | null; // User who approved the submission
+
   _id?: string;
 }
 

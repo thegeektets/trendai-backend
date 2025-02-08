@@ -23,7 +23,17 @@ export class Campaign {
   @Prop({ enum: ['active', 'paused', 'completed'], default: 'active' })
   status: string;
 
+  @Prop({ type: String, required: true, ref: 'Brand' })
+  brand: string;
+
   _id?: string;
 }
 
 export const CampaignSchema = SchemaFactory.createForClass(Campaign);
+
+// Now you can define the virtual after the schema is created
+CampaignSchema.virtual('submissions', {
+  ref: 'Submission',
+  localField: '_id',
+  foreignField: 'campaignId',
+});
