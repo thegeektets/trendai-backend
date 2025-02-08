@@ -16,8 +16,8 @@ export class Submission {
   @Prop({ required: true, type: Types.ObjectId, ref: 'Campaign' })
   campaignId: Types.ObjectId;
 
-  @Prop({ required: true })
-  influencer: string;
+  @Prop({ type: Types.ObjectId, ref: 'Influencer', required: true })
+  influencer: Types.ObjectId;
 
   @Prop({ required: true })
   contentLink: string;

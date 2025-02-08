@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsNumber, Min, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsDateString,
+  IsEnum,
+  IsMongoId,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateCampaignDto {
@@ -11,18 +18,23 @@ export class CreateCampaignDto {
   description: string;
 
   @IsNumber()
-  @Min(0)
-  @Type(() => Number)
+  @IsNotEmpty()
   budget: number;
 
-  @IsDate()
+  @IsDateString()
+  @IsNotEmpty()
   @Type(() => Date)
   startDate: Date;
 
-  @IsDate()
+  @IsDateString()
+  @IsNotEmpty()
   @Type(() => Date)
   endDate: Date;
 
-  @IsString()
-  status?: string;
+  @IsEnum(['active', 'paused', 'completed'])
+  status: string;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  brand: string;
 }
