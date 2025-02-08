@@ -14,10 +14,9 @@ export class UserService {
     if (existingUser) throw new BadRequestException('Email already exists');
 
     // Create user without brandId/influencerId initially
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = new this.userModel({
       email: dto.email,
-      password: hashedPassword,
+      password: dto.password,
       role: dto.role,
       brandId: null,
       influencerId: null,

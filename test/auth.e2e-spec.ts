@@ -65,8 +65,7 @@ describe('AuthController (e2e)', () => {
   });
 
   it('POST /auth/login should fail with incorrect password', async () => {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    await userModel.create({ ...userData, password: hashedPassword });
+    await userModel.create({ ...userData, password: userData.password });
 
     const response = await request(app.getHttpServer())
       .post('/auth/login')
