@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Submission, SubmissionDocument } from './submission.schema';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
+import { flattenObject } from '../../common/utils';
 
 @Injectable()
 export class SubmissionService {
@@ -13,7 +14,43 @@ export class SubmissionService {
   ) {}
 
   async getSubmissions(): Promise<Submission[]> {
-    return this.submissionModel.find().exec();
+    const submissions = await this.submissionModel.find().exec();
+    return submissions.map((submission: any) => ({
+      ...submission,
+      _id: submission._id.toString(),
+    }));
+  }
+
+  async getSubmissionsByBrand(brandId: string): Promise<Submission[]> {
+    const submissions = await this.submissionModel
+      .find({ brand: brandId })
+      .populate('influencer')
+      .populate('campaign')
+      .populate('brand')
+      .populate('approver')
+      .lean()
+      .exec();
+    return submissions.map((submission: any) => ({
+      ...flattenObject(submission),
+      _id: submission._id.toString(),
+    }));
+  }
+
+  async getSubmissionsByInfluencer(
+    influencerId: string,
+  ): Promise<Submission[]> {
+    const submissions = await this.submissionModel
+      .find({ influencer: influencerId })
+      .populate('influencer')
+      .populate('brand')
+      .populate('campaign')
+      .populate('approver')
+      .lean()
+      .exec();
+    return submissions.map((submission: any) => ({
+      ...flattenObject(submission),
+      _id: submission._id.toString(),
+    }));
   }
 
   async getSubmissionById(id: string): Promise<Submission> {

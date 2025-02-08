@@ -6,7 +6,6 @@ import { Connection, Model } from 'mongoose';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../src/modules/users/user.schema';
 import { AuthModule } from '../src/modules/auth/auth.module';
-import * as bcrypt from 'bcrypt';
 import { getConnectionToken } from '@nestjs/mongoose';
 
 describe('AuthController (e2e)', () => {

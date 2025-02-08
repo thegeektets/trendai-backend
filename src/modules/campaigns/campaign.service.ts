@@ -26,10 +26,12 @@ export class CampaignService {
 
     // Step 2: Fetch all submissions for the brand in a single query
     const submissions = await this.submissionModel
-      .find({ campaignId: { $in: campaigns.map((c) => c._id.toString()) } })
+      .find({ campaign: { $in: campaigns.map((c) => c._id.toString()) } })
       .populate('influencer')
       .lean()
       .exec();
+
+    console.log('submissions', submissions);
 
     // Step 3: Group submissions by campaign and influencer
     const campaignMap = new Map<string, any>();
@@ -50,10 +52,12 @@ export class CampaignService {
 
     // Add submissions to their respective campaigns and influencers
     submissions.forEach((submission: any) => {
-      const campaignId = submission.campaignId.toString();
+      const campaignId = submission.campaign.toString();
       const influencerId = submission.influencer._id.toString();
 
       const campaignData = campaignMap.get(campaignId);
+
+      console.log('campaignData', campaignData);
 
       // Initialize the influencer in the campaign's influencer map if it doesn't exist
       if (!campaignData.influencers.has(influencerId)) {

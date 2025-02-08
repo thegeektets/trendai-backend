@@ -1,5 +1,4 @@
 import {
-  IsString,
   IsNotEmpty,
   IsMongoId,
   IsUrl,
@@ -22,11 +21,15 @@ class EngagementDto {
 export class CreateSubmissionDto {
   @IsMongoId()
   @IsNotEmpty()
-  campaignId: string;
+  campaign: string;
 
-  @IsString()
+  @IsMongoId()
   @IsNotEmpty()
   influencer: string;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  brand: string;
 
   @IsUrl()
   @IsNotEmpty()

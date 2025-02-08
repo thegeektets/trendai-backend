@@ -36,6 +36,34 @@ export class SubmissionController {
     return await this.submissionService.getSubmissions();
   }
 
+  @Get('brand/:brandId')
+  @UseGuards(RolesGuard)
+  @Roles('brand')
+  /**
+   * Retrieves all brand submissions.
+   *
+   * @returns All submissions.
+   */
+  async getSubmissionsByBrand(@Param('brandId') brandId: string) {
+    return await this.submissionService.getSubmissionsByBrand(brandId);
+  }
+
+  @Get('influencer/:influencerId')
+  @UseGuards(RolesGuard)
+  @Roles('influencer', 'brand')
+  /**
+   * Retrieves all brand submissions.
+   *
+   * @returns All submissions.
+   */
+  async getSubmissionsByInfluencer(
+    @Param('influencerId') influencerId: string,
+  ) {
+    return await this.submissionService.getSubmissionsByInfluencer(
+      influencerId,
+    );
+  }
+
   @Get(':id')
   @UseGuards(RolesGuard)
   @Roles('brand', 'influencer')
@@ -64,7 +92,7 @@ export class SubmissionController {
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles('influencer')
+  @Roles('influencer', 'brand')
   /**
    * Handles the update of a submission.
    *
@@ -81,7 +109,7 @@ export class SubmissionController {
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles('influencer')
+  @Roles('influencer', 'brand')
   /**
    * Handles the partial update of a submission.
    *

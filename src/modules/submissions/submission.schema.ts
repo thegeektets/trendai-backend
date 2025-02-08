@@ -14,10 +14,13 @@ class Engagement {
 @Schema({ timestamps: true })
 export class Submission {
   @Prop({ required: true, type: Types.ObjectId, ref: 'Campaign' })
-  campaignId: Types.ObjectId;
+  campaign: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Influencer', required: true })
   influencer: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Brand', required: true })
+  brand: Types.ObjectId;
 
   @Prop({ required: true })
   contentLink: string;
@@ -33,10 +36,10 @@ export class Submission {
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
   })
-  status: string; // Status of the submission (pending, approved, rejected)
+  status: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: false })
-  approver: Types.ObjectId | null; // User who approved the submission
+  approver: Types.ObjectId | null;
 
   _id?: string;
 }
