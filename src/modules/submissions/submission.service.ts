@@ -36,21 +36,45 @@ export class SubmissionService {
     }));
   }
 
-  async getSubmissionsByInfluencer(
-    influencerId: string,
-  ): Promise<Submission[]> {
+  async getSubmissionsByInfluencer(influencerId: string) {
     const submissions = await this.submissionModel
       .find({ influencer: influencerId })
-      .populate('influencer')
       .populate('brand')
       .populate('campaign')
       .populate('approver')
       .lean()
       .exec();
-    return submissions.map((submission: any) => ({
-      ...flattenObject(submission),
-      _id: submission._id.toString(),
-    }));
+
+    // Grouping logic
+    const groupedData = submissions.reduce((acc, submission: any) => {
+      const brandId = submission.brand?._id.toString();
+      const campaignId = submission.campaign?._id.toString();
+
+      if (!acc[brandId]) {
+        acc[brandId] = {
+          ...submission.brand,
+          brandName: submission.brand?.name || 'Unknown Brand',
+          campaigns: {},
+        };
+      }
+
+      if (!acc[brandId].campaigns[campaignId]) {
+        acc[brandId].campaigns[campaignId] = {
+          ...submission.campaign,
+          campaignName: submission.campaign?.name || 'Unknown Campaign',
+          submissions: [],
+        };
+      }
+
+      acc[brandId].campaigns[campaignId].submissions.push({
+        ...submission,
+        _id: submission._id.toString(),
+      });
+
+      return acc;
+    }, {});
+
+    return groupedData;
   }
 
   async getSubmissionById(id: string): Promise<Submission> {
